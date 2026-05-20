@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+   <title>TUS MIchemiss | Micheladas Caseras</title>
+   <meta name="description" content="Las micheladas más deliciosas, frescas y caseras. ¡Pide ya la tuya! Envíos rápidos.">
+   <meta name="mobile-web-app-capable" content="yes">
+   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+   <meta name="theme-color" content="#111111">
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+   <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* IMAGEN DE FONDO QUE OCUPA TODO EL BODY */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: url('imgBody.png') no-repeat center center fixed;
+            background-size: cover;
+            color: #111;
+            line-height: 1.4;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Capa semitransparente para mejorar legibilidad */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(248, 248, 252, 0.88);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        body.no-scroll { overflow: hidden; }
+
+        /* Variables nativas */
+        :root {
+            --bg-app: rgba(248, 248, 252, 0.92);
+            --card-white: #ffffff;
+            --black: #111111;
+            --gray-light: #f0f0f3;
+            --gray-border: #e9e9ef;
+            --red-accent: #e53935;
+            --radius-card: 20px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --shadow-sm: 0 4px 12px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+        }
+
+        /* HEADER STICKY NATIVO */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(25px);
+            border-bottom: 0.5px solid rgba(0,0,0,0.05);
+            padding: 0 24px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-logo {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--black);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .header-logo span { color: var(--red-accent); }
+        .header-logo img {
+            width: 42px;
+            height: 42px;
+            border-radius: 30px;
+            object-fit: cover;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        .header-acciones { display: flex; gap: 18px; align-items: center; }
+        .header-link { text-decoration: none; color: #3a3a3a; font-weight: 600; font-size: 0.9rem; transition: color 0.2s; cursor: pointer; }
+        .header-link:hover { color: #000; }
+        .header-btn {
+            background: var(--black);
+            color: white;
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        .header-btn:hover { background: #333; transform: scale(1.02); }
+        .header-btn:active { transform: scale(0.96); }
+
+        /* HERO con imagen existente */
+        .hero-full {
+            width: 100%;
+            height: 55vh;
+            min-height: 320px;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.4)), url('destacadofull.png') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        /* Contenido principal */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px 100px;
+            position: relative;
+        }
+
+        /* Vista de agradecimiento (inicialmente oculta) */
+        .gracias-view {
+            display: none;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px 0 60px;
+        }
+        .gracias-view.activo {
+            display: block;
+        }
+        .menu-view {
+            display: block;
+        }
+        .menu-view.oculto {
+            display: none;
+        }
+
+        /* Tarjeta de agradecimiento */
+        .gracias-card {
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+            overflow: hidden;
+            width: 100%;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .exito-header {
+            background: linear-gradient(135deg, #111 0%, #2c2c2c 100%);
+            color: white;
+            text-align: center;
+            padding: 40px 24px;
+        }
+        .exito-icono {
+            font-size: 4.5rem;
+            background: rgba(255,255,255,0.15);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        .exito-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+        .exito-header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        .pedido-body {
+            padding: 32px 28px;
+        }
+        .mensaje-personal {
+            background: #fff9e6;
+            border-left: 4px solid #ff8f00;
+            padding: 16px 20px;
+            border-radius: 16px;
+            margin-bottom: 28px;
+            font-weight: 500;
+            color: #5a3e00;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .datos-seccion {
+            margin-bottom: 28px;
+        }
+        .datos-seccion h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+        .datos-grid {
+            background: #f8f8fc;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .dato-item {
+            display: flex;
+            padding: 14px 20px;
+            border-bottom: 1px solid #e9e9ef;
+        }
+        .dato-item:last-child {
+            border-bottom: none;
+        }
+        .dato-label {
+            width: 100px;
+            font-weight: 600;
+            color: #5e5e66;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        .dato-valor {
+            flex: 1;
+            font-weight: 600;
+            color: #111;
+            word-break: break-word;
+        }
+        .tiempo-entrega {
+            background: #e8f5e9;
+            border-radius: 20px;
+            padding: 18px 20px;
+            margin: 24px 0;
+            text-align: center;
+        }
+        .tiempo-entrega i {
+            font-size: 2rem;
+            color: #2e7d32;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .btn-volver {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #111;
+            color: white;
+            text-decoration: none;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 16px;
+        }
+        .btn-volver:hover { background: #333; }
+
+        /* Categorías */
+        .categorias-rapidas {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            padding: 16px 0 24px;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .categoria-chip {
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(4px);
+            border: 1px solid var(--gray-border);
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .categoria-chip.activo { background: var(--black); color: white; border-color: var(--black); }
+
+        .seccion-titulo { display: flex; align-items: baseline; justify-content: space-between; margin: 16px 0 24px; }
+        .seccion-titulo h2 { font-size: 1.8rem; font-weight: 800; }
+
+        .productos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 28px;
+            margin-bottom: 40px;
+        }
+        @media (max-width: 640px) {
+            .productos-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+            .seccion-titulo h2 { font-size: 1.45rem; }
+            .main-content { padding: 0 16px 90px; }
+            .header { padding: 0 16px; height: 60px; }
+            .header-logo { font-size: 1.1rem; }
+        }
+
+        .producto-card {
+            background: var(--card-white);
+            border-radius: var(--radius-card);
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            height: 100%;
+        }
+        .producto-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
+        .producto-img-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fef9f0;
+            overflow: hidden;
+        }
+        .producto-img-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .producto-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+        }
+        .badge-popular { background: #ff8f00; color: #fff; }
+        .badge-oferta { background: var(--red-accent); color: white; }
+        .badge-nuevo { background: #111; color: white; }
+
+        .producto-info {
+            padding: 14px 14px 18px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 8px;
+        }
+        .producto-info h3 { font-size: 1.05rem; font-weight: 700; }
+        .descripcion { font-size: 0.75rem; color: #6c6c70; }
+        .precio-actual { font-size: 1.2rem; font-weight: 800; }
+        .btn-pedir {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px 0;
+            margin-top: auto;
+            background: #111;
+            color: white;
+            border: none;
+            border-radius: 44px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+        .modal-overlay.activo { opacity: 1; pointer-events: all; }
+        .modal {
+            background: #ffffff;
+            border-radius: 32px 32px 0 0;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 28px 24px 36px;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
+        }
+        .modal-overlay.activo .modal { transform: translateY(0); }
+        .modal-cerrar { position: absolute; top: 20px; right: 24px; font-size: 28px; background: none; border: none; cursor: pointer; }
+        .producto-resumen { background: #f7f7f9; border-radius: 20px; padding: 14px; margin-bottom: 24px; display: flex; gap: 14px; align-items: center; }
+        .producto-resumen img { width: 64px; height: 64px; border-radius: 16px; object-fit: cover; }
+        .modal-campo { margin-bottom: 20px; }
+        .modal-campo label { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; color: #5e5e66; display: block; margin-bottom: 8px; }
+        .modal-campo input { width: 100%; padding: 14px 18px; border: 1.5px solid #e9e9ef; border-radius: 20px; font-size: 1rem; }
+        .modal-pago-opciones { display: flex; gap: 14px; margin: 16px 0 20px; }
+        .pago-opcion { flex: 1; background: #f2f2f5; border-radius: 40px; text-align: center; padding: 12px; font-weight: 600; cursor: pointer; }
+        .pago-opcion.seleccionado { background: #111; color: white; }
+        .transferencia-seccion { display: none; margin-top: 12px; }
+        .banco-btn { background: #f0f0f3; border: none; padding: 12px; border-radius: 44px; font-weight: 700; width: 48%; cursor: pointer; }
+        .btn-enviar { background: #111; color: white; padding: 16px; border-radius: 44px; font-weight: 800; width: 100%; margin-top: 20px; border: none; cursor: pointer; }
+        .btn-enviar:disabled { opacity: 0.5; }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(25px);
+            border-top: 0.5px solid rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 20px calc(12px + var(--safe-bottom));
+            z-index: 1200;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.75rem; font-weight: 500; color: #8e8e93; cursor: pointer; gap: 5px; }
+        .nav-item.activo { color: #000; font-weight: 700; }
+        .nav-item .icono-nav { font-size: 1.6rem; }
+
+        .footer-brand-full {
+            width: 100%;
+            height: 35vh;
+            min-height: 220px;
+            margin: 40px 0 0;
+            background-image: url('michemisslogo.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .footer-brand-full::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .footer-content { position: relative; z-index: 1; text-align: center; color: white; }
+        .footer-copy { font-size: 0.8rem; background: rgba(0,0,0,0.4); padding: 6px 18px; border-radius: 40px; display: inline-block; }
+        .confeti {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3000; overflow: hidden;
+        }
+        .confeti-piece {
+            position: absolute; width: 10px; height: 10px; opacity: 0.7;
+            animation: confetiFall 3s ease-out forwards;
+        }
+        @keyframes confetiFall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="header-logo" id="logoPrincipal">
+        <img src="michemisslogo.png" alt="Logo">
+        TUS <span>MICHEMISS</span>
+    </div>
+    <div class="header-acciones">
+        <span class="header-link" id="menuHeaderLink">Menú</span>
+        <button class="header-btn abrir-submodal">Pedir ya</button>
+    </div>
+</header>
+
+<section class="hero-full" id="heroSection"></section>
+
+<!-- VISTA PRINCIPAL (MENÚ) -->
+<div class="main-content menu-view" id="menuView">
+    <div class="categorias-rapidas">
+        <button class="categoria-chip activo" data-filtro="todas">Todas</button>
+        <button class="categoria-chip" data-filtro="clasicas">Clásicas</button>
+        <button class="categoria-chip" data-filtro="frutales">Frutales</button>
+        <button class="categoria-chip" data-filtro="especiales">Especiales</button>
+        <button class="categoria-chip" data-filtro="premium">Ardientes</button>
+    </div>
+    <div class="seccion-titulo" id="productos"><h2>🍺 Nuestro Menú</h2></div>
+    <div class="productos-grid" id="productosGrid">
+        <div class="producto-card" data-categoria="clasicas"><div class="producto-img-wrapper"><span class="producto-badge badge-popular">⭐ Best Seller</span><img src="17792043827df5.png" alt="Clásica"></div><div class="producto-info"><h3>Michelada Clásica</h3><p class="descripcion">Limón, sal, salsa inglesa y el toque picante justo.</p><div class="producto-precios"><span class="precio-actual">$17.000</span><span class="precio-original">$22.000</span><span class="precio-descuento">-19%</span></div><button class="btn-pedir">🛒 Pedir</button></div></div>
+        <div class="producto-card" data-categoria="premium"><div class="producto-img-wrapper"><span class="producto-badge badge-oferta">🔥 Oferta</span><img src="1779203937a117.png" alt="Camarón"></div><div class="producto-info"><h3>Michelada con Camarón</h3><p class="descripcion">Camarones frescos, chamoy y borde escarchado.</p><div class="producto-precios"><span class="precio-actual">$23.000</span></div><button class="btn-pedir">🛒 Pedir</button></div></div>
+        <div class="producto-card" data-categoria="frutales"><div class="producto-img-wrapper"><span class="producto-badge badge-nuevo">🆕 Nuevo</span><img src="177920414219b2.png" alt="Mango"></div><div class="producto-info"><h3>Michelada de Mango</h3><p class="descripcion">Dulce, picante y súper refrescante.</p><div class="producto-precios"><span class="precio-actual">$12.000</span></div><button class="btn-pedir">🛒 Pedir</button></div></div>
+        <div class="producto-card" data-categoria="frutales"><div class="producto-img-wrapper"><img src="imgen4.png" alt="Tamarindo"></div><div class="producto-info"><h3>Michelada de Tamarindo</h3><p class="descripcion">Ácido, dulce y con chamoy.</p><div class="producto-precios"><span class="precio-actual">$12.000</span></div><button class="btn-pedir">🛒 Pedir</button></div></div>
+        <div class="producto-card" data-categoria="clasicas"><div class="producto-img-wrapper"><img src="imagen7.png" alt="Chelada"></div><div class="producto-info"><h3>Chelada Tradicional</h3><p class="descripcion">Mucho limón, sal y hielo.</p><div class="producto-precios"><span class="precio-actual">$8.000</span></div><button class="btn-pedir">🛒 Pedir</button></div></div>
+        <div class="producto-card" data-categoria="especiales"><div class="producto-img-wrapper"><span class="producto-badge badge-oferta">🌟 Especial</span><img src="imagen6.png" alt="Especial"></div><div class="producto-info"><h3>Michelada Especial</h3><p class="descripcion">Chamoy, gomitas, miguelito y borde de tamarindo.</p><div class="producto-precios"><span class="precio-actual">$27.500</span></div><button class="btn-pedir">🛒 Pedir</button></div></div>
+    </div>
+    <div class="footer-brand-full"><div class="footer-content"><div class="footer-copy">© 2025 TUS MICHEMISS - Sabor que enamora</div></div></div>
+</div>
+
+<!-- VISTA DE AGRADECIMIENTO -->
+<div class="gracias-view" id="graciasView">
+    <div class="gracias-card">
+        <div class="exito-header">
+            <div class="exito-icono"><i class="fas fa-check-circle"></i></div>
+            <h1>¡Gracias por tu pedido! 🍺</h1>
+            <p>Tus datos han sido recibidos correctamente</p>
+        </div>
+        <div class="pedido-body">
+            <div class="mensaje-personal"><i class="fas fa-smile-wink"></i><span>¡Hola! Nos encanta que hayas elegido TUS MICHEMISS. Preparamos cada detalle con mucho sabor y cariño.</span></div>
+            <div class="datos-seccion">
+                <h3><i class="fas fa-clipboard-list"></i> Detalles de tu pedido</h3>
+                <div class="datos-grid" id="datosPedidoGracias">
+                    <div class="dato-item"><div class="dato-label">Producto</div><div class="dato-valor" id="displayProducto">---</div></div>
+                    <div class="dato-item"><div class="dato-label">Precio</div><div class="dato-valor" id="displayPrecio">---</div></div>
+                    <div class="dato-item"><div class="dato-label">Nombre</div><div class="dato-valor" id="displayNombre">---</div></div>
+                    <div class="dato-item"><div class="dato-label">Teléfono</div><div class="dato-valor" id="displayTelefono">---</div></div>
+                    <div class="dato-item"><div class="dato-label">Dirección</div><div class="dato-valor" id="displayDireccion">---</div></div>
+                    <div class="dato-item"><div class="dato-label">Pago</div><div class="dato-valor" id="displayPago">---</div></div>
+                </div>
+            </div>
+            <div class="tiempo-entrega"><i class="fas fa-motorcycle"></i><p>⏱️ Tu pedido ya está siendo preparado</p><strong>¡Pronto tu MICHEMISS estará en la puerta de tu casa!</strong><p style="margin-top: 10px;">Tiempo estimado: 30-45 minutos</p></div>
+            <button class="btn-volver" id="volverAlMenuBtn"><i class="fas fa-arrow-left"></i> Volver al menú principal</button>
+        </div>
+    </div>
+    <div class="footer-brand-full" style="margin-top: 30px;"><div class="footer-content"><div class="footer-copy">© 2025 TUS MICHEMISS</div></div></div>
+</div>
+
+<nav class="bottom-nav">
+    <div class="nav-item activo" data-nav="inicio"><i class="fas fa-home icono-nav"></i><span>Inicio</span></div>
+    <div class="nav-item" data-nav="productos"><i class="fas fa-beer icono-nav"></i><span>Menú</span></div>
+    <div class="nav-item abrir-submodal"><i class="fas fa-shopping-cart icono-nav"></i><span>Pedir</span></div>
+</nav>
+
+<!-- MODAL PEDIDO -->
+<div class="modal-overlay" id="modalOverlay"><div class="modal"><button class="modal-cerrar" id="cerrarModal">✕</button><h2>🍺 Completa tu pedido</h2><div class="producto-resumen" id="productoResumen"><img id="resumenImg" src=""><div><div id="resumenNombre"></div><div id="resumenPrecio" style="font-weight:700;"></div></div></div><form id="formPedido"><input type="hidden" name="producto" id="inputProducto"><input type="hidden" name="precio" id="inputPrecio"><div class="modal-campo"><label>Nombre completo</label><input type="text" name="nombre" id="inputNombre" required></div><div class="modal-campo"><label>Teléfono</label><input type="tel" name="telefono" id="inputTelefono" required></div><div class="modal-campo"><label>Dirección</label><input type="text" name="direccion" id="inputDireccion" required></div><div class="modal-pago-opciones"><div class="pago-opcion seleccionado" data-pago="contraentrega">💵 Contra entrega</div><div class="pago-opcion" data-pago="transferencia">🏦 Transferencia</div></div><div class="transferencia-seccion" id="transferenciaSeccion"><div style="display:flex; gap:12px;"><button type="button" class="banco-btn nequi" data-banco="nequi">Nequi</button><button type="button" class="banco-btn bancolombia" data-banco="bancolombia">Bancolombia</button></div><div class="cuenta-info" id="cuentaInfo" style="background:#f2f2f2; padding:12px; border-radius:20px; margin:12px 0;"></div><div class="confirm-pago"><input type="checkbox" id="checkPago"><label for="checkPago"> Confirmo transferencia</label></div></div><button type="submit" class="btn-enviar" id="submitPedidoBtn">Enviar pedido 🍺</button></form></div></div>
+
+<script>
+    (function(){
+        // Elementos de vistas
+        const menuView = document.getElementById('menuView');
+        const graciasView = document.getElementById('graciasView');
+        const heroSection = document.getElementById('heroSection');
+        const logoPrincipal = document.getElementById('logoPrincipal');
+        const menuHeaderLink = document.getElementById('menuHeaderLink');
+        
+        // Función para mostrar menú
+        function mostrarMenu() {
+            menuView.classList.remove('oculto');
+            menuView.style.display = 'block';
+            graciasView.classList.remove('activo');
+            graciasView.style.display = 'none';
+            heroSection.style.display = 'block';
+            document.body.classList.remove('no-scroll');
+        }
+        
+        // Función para mostrar gracias
+        function mostrarGracias(datos) {
+            // Guardar datos
+            localStorage.setItem('ultimoProducto', datos.producto);
+            localStorage.setItem('ultimoPrecio', datos.precio);
+            localStorage.setItem('ultimoNombre', datos.nombre);
+            localStorage.setItem('ultimoTelefono', datos.telefono);
+            localStorage.setItem('ultimoDireccion', datos.direccion);
+            localStorage.setItem('ultimoPago', datos.pago);
+            
+            // Actualizar vista de gracias
+            document.getElementById('displayProducto').innerHTML = `<strong>🍺 ${datos.producto}</strong>`;
+            document.getElementById('displayPrecio').innerText = datos.precio;
+            document.getElementById('displayNombre').innerText = datos.nombre;
+            document.getElementById('displayTelefono').innerText = datos.telefono;
+            document.getElementById('displayDireccion').innerText = datos.direccion;
+            let pagoTexto = datos.pago === 'contraentrega' ? '💵 Contra entrega' : '🏦 Transferencia bancaria';
+            document.getElementById('displayPago').innerText = pagoTexto;
+            
+            // Cambiar vistas
+            menuView.style.display = 'none';
+            menuView.classList.add('oculto');
+            graciasView.style.display = 'block';
+            graciasView.classList.add('activo');
+            heroSection.style.display = 'none';
+            
+            // Crear confeti
+            crearConfeti();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function crearConfeti() {
+            const container = document.createElement('div');
+            container.className = 'confeti';
+            document.body.appendChild(container);
+            const colores = ['#e53935', '#ff8f00', '#2e7d32', '#1e88e5', '#ffd600'];
+            for (let i = 0; i < 100; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confeti-piece';
+                piece.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.width = (Math.random() * 8 + 4) + 'px';
+                piece.style.height = (Math.random() * 8 + 4) + 'px';
+                piece.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+                piece.style.animationDelay = Math.random() * 1.5 + 's';
+                container.appendChild(piece);
+            }
+            setTimeout(() => container.remove(), 4000);
+        }
+        
+        // Modal y envío
+        const modal = document.getElementById('modalOverlay');
+        const cerrarModalBtn = document.getElementById('cerrarModal');
+        const formPedido = document.getElementById('formPedido');
+        
+        let productoSeleccionado = { nombre: '', precio: '', img: '' };
+        
+        function abrirModal(producto, precio, imgSrc) {
+            productoSeleccionado = { nombre: producto, precio: precio, img: imgSrc };
+            document.getElementById('inputProducto').value = producto;
+            document.getElementById('inputPrecio').value = precio;
+            document.getElementById('resumenNombre').innerText = producto;
+            document.getElementById('resumenPrecio').innerText = precio;
+            if(imgSrc) document.getElementById('resumenImg').src = imgSrc;
+            modal.classList.add('activo');
+            document.body.classList.add('no-scroll');
+        }
+        
+        function cerrarModalFunc(){ modal.classList.remove('activo'); document.body.classList.remove('no-scroll'); }
+        cerrarModalBtn.onclick = cerrarModalFunc;
+        modal.onclick = (e) => { if(e.target === modal) cerrarModalFunc(); };
+        
+        document.querySelectorAll('.btn-pedir').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const card = btn.closest('.producto-card');
+                const nombre = card.querySelector('h3')?.innerText;
+                const precio = card.querySelector('.precio-actual')?.innerText;
+                const img = card.querySelector('.producto-img-wrapper img')?.src;
+                abrirModal(nombre, precio, img);
+            });
+        });
+        
+        // Lógica de pago
+        document.querySelectorAll('.pago-opcion').forEach(op => {
+            op.onclick = () => {
+                document.querySelectorAll('.pago-opcion').forEach(o => o.classList.remove('seleccionado'));
+                op.classList.add('seleccionado');
+                const transferDiv = document.getElementById('transferenciaSeccion');
+                transferDiv.style.display = op.dataset.pago === 'transferencia' ? 'block' : 'none';
+                if(op.dataset.pago !== 'transferencia') document.getElementById('submitPedidoBtn').disabled = false;
+            };
+        });
+        
+        document.querySelectorAll('.banco-btn').forEach(btn => {
+            btn.onclick = () => {
+                const banco = btn.dataset.banco;
+                document.getElementById('cuentaInfo').innerHTML = `Cuenta: ${banco === 'nequi' ? '+57 320 7940549' : '2380000000333795'}`;
+                document.getElementById('cuentaInfo').style.display = 'block';
+                document.querySelector('.confirm-pago').style.display = 'flex';
+                document.getElementById('checkPago').checked = false;
+                document.getElementById('submitPedidoBtn').disabled = true;
+            };
+        });
+        
+        document.getElementById('checkPago')?.addEventListener('change', (e) => {
+            const metodo = document.querySelector('.pago-opcion.seleccionado')?.dataset.pago;
+            if(metodo === 'transferencia') document.getElementById('submitPedidoBtn').disabled = !e.target.checked;
+        });
+        
+        // Envío del formulario (simulación + Formspree)
+        formPedido.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nombre = document.getElementById('inputNombre').value;
+            const telefono = document.getElementById('inputTelefono').value;
+            const direccion = document.getElementById('inputDireccion').value;
+            const producto = document.getElementById('inputProducto').value;
+            const precio = document.getElementById('inputPrecio').value;
+            const metodoPago = document.querySelector('.pago-opcion.seleccionado')?.dataset.pago || 'contraentrega';
+            
+            const datosPedido = { nombre, telefono, direccion, producto, precio, pago: metodoPago };
+            
+            // Enviar a Formspree
+            const formData = new FormData();
+            formData.append('nombre', nombre);
+            formData.append('telefono', telefono);
+            formData.append('direccion', direccion);
+            formData.append('producto', producto);
+            formData.append('precio', precio);
+            formData.append('pago', metodoPago);
+            
+            try {
+                await fetch('https://formspree.io/f/mzdwepvw', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+            } catch(err) { console.log('Error en envío a Formspree', err); }
+            
+            cerrarModalFunc();
+            mostrarGracias(datosPedido);
+        });
+        
+        // Submodal y filtros
+        document.querySelectorAll('.abrir-submodal').forEach(el => {
+            el.addEventListener('click', () => {
+                // Simplemente abrir modal o mostrar productos
+                const primerProducto = document.querySelector('.producto-card');
+                if(primerProducto) {
+                    const nombre = primerProducto.querySelector('h3')?.innerText;
+                    const precio = primerProducto.querySelector('.precio-actual')?.innerText;
+                    const img = primerProducto.querySelector('.producto-img-wrapper img')?.src;
+                    abrirModal(nombre, precio, img);
+                }
+            });
+        });
+        
+        // Filtros
+        document.querySelectorAll('.categoria-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.categoria-chip').forEach(c => c.classList.remove('activo'));
+                chip.classList.add('activo');
+                const filtro = chip.dataset.filtro;
+                document.querySelectorAll('.producto-card').forEach(card => {
+                    card.style.display = (filtro === 'todas' || card.dataset.categoria === filtro) ? '' : 'none';
+                });
+            });
+        });
+        
+        // Navegación bottom nav
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('activo'));
+                item.classList.add('activo');
+                const target = item.dataset.nav;
+                if(target === 'inicio') window.scrollTo({ top: 0, behavior: 'smooth' });
+                if(target === 'productos') document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+        
+        // Botón volver al menú
+        document.getElementById('volverAlMenuBtn')?.addEventListener('click', () => {
+            mostrarMenu();
+        });
+        
+        logoPrincipal?.addEventListener('click', mostrarMenu);
+        menuHeaderLink?.addEventListener('click', () => {
+            mostrarMenu();
+            document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        // Asegurar vista inicial correcta
+        mostrarMenu();
+    })();
+</script>
+</body>
+</html>
